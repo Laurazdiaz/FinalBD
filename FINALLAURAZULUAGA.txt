@@ -1,0 +1,42 @@
+CREATE TABLE masks (
+  ID NUMBER NOT NULL PRIMARY KEY,
+  mask varchar2(1000),
+  result varchar2(4000)
+);  
+
+CREATE OR REPLACE FUNCTION MASK_FUNCTION(NUEMRO VARCHAR2)
+RETURN VARCHAR2 IS
+ RESULTADO VARCHAR2(4000);
+ MAXIMO_EXCEPTION EXCEPTION;
+ VALOR NUMBER;
+
+  CREATE OR REPLACE FUNCTION mask_function (numero IN integer)
+RETURN integer IS
+   num_c NUMBER := 0;
+   --numero varchar2 (1 < INPUTSTRING.LENGTH <10000);
+   numero integer;
+   
+   
+BEGIN  
+    FOR i IN 0..numero  LOOP    
+      IF MOD(i, 6) = 0 
+      THEN
+        num_c := num_c + i;
+      END IF;
+    END LOOP;
+    RETURN num_c;
+EXCEPTION    
+  WHEN EXP_1 THEN
+    --RETURN 'ERRO-1'||SUBSTR(SQLCODE,0,1);
+END;
+
+EXEC dbms_output.put_line();
+
+CREATE OR REPLACE TRIGGER Trigger_Final
+BEFORE INSERT ON resu_T FOR EACH ROW 
+DECLARE
+  v_cal VARCHAR2(4000);
+BEGIN
+    v_cal := mask_function(:new.mask);
+    :new.Result := v_cal;
+END;
